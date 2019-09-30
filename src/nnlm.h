@@ -14,7 +14,7 @@
 #include <Rcpp.h>
 #include <R.h>
 
-#define TINY_NUM 1e-16
+#define TINY_NUM 1e-15
 #define NNLM_REL_TOL 1e-8
 #define NNMF_REL_TOL 1e-6
 #define MAX_ITER 500

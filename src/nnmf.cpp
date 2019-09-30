@@ -1,5 +1,7 @@
 #include "nnlm.h"
 
+double cost (const mat& A, const mat& Ahat, double e);
+  
 //[[Rcpp::export]]
 Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat Hm,
 	const vec & alpha, const vec & beta, const unsigned int max_iter, const double rel_tol, 
@@ -65,12 +67,12 @@ Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat
 	bool any_missing = !A.is_finite();
 	if (any_missing) 
 	{
-		non_missing = find_finite(A);
-		N_non_missing = non_missing.n_elem;
-		mkl_err.fill(mean((A.elem(non_missing)+TINY_NUM) % log(A.elem(non_missing)+TINY_NUM) - A.elem(non_missing)));
+	  non_missing = find_finite(A);
+	  N_non_missing = non_missing.n_elem;
+	  mkl_err.fill(0);
 	}
 	else
-		mkl_err.fill(mean(mean((A+TINY_NUM) % log(A+TINY_NUM) - A))); // fixed part in KL-dist, mean(A log(A) - A)
+	  mkl_err.fill(0);
 
 	if (Wm.empty())
 		Wm.resize(0, n);
@@ -117,13 +119,6 @@ Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat
 			total_raw_iter += update_with_missing(W, H, A.t(), Wm, alpha, inner_max_iter, inner_rel_tol, n_threads, method);
 			// update H
 			total_raw_iter += update_with_missing(H, W, A, Hm, beta, inner_max_iter, inner_rel_tol, n_threads, method);
-
-			if (i % trace == 0)
-			{
-				const mat & Ahat = W.t()*H;
-				mse_err(i_e) = mean(square((A - Ahat).eval().elem(non_missing)));
-				mkl_err(i_e) += mean((-(A+TINY_NUM) % log(Ahat+TINY_NUM) + Ahat).eval().elem(non_missing));
-			}
 		}
 		else
 		{
@@ -132,11 +127,10 @@ Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat
 			// update H
 			total_raw_iter += update(H, W, A, Hm, beta, inner_max_iter, inner_rel_tol, n_threads, method);
 
-			if (i % trace == 0)
-			{
-				const mat & Ahat = W.t()*H;
-				mse_err(i_e) = mean(mean(square((A - Ahat))));
-				mkl_err(i_e) += mean(mean(-(A+TINY_NUM) % log(Ahat+TINY_NUM) + Ahat));
+			if (i % trace == 0) {
+			  const mat & Ahat = W.t()*H;
+			  mse_err(i_e) = mean(mean(square((A - Ahat))));
+			  mkl_err(i_e) = cost(A,Ahat,TINY_NUM);
 			}
 		}
 
@@ -163,18 +157,9 @@ Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat
 	// compute error of the last iteration
 	if ((i-1) % trace != 0)
 	{
-		if (any_missing)
-		{
-			const mat & Ahat = W.t()*H;
-			mse_err(i_e) = mean(square((A - Ahat).eval().elem(non_missing)));
-			mkl_err(i_e) += mean((-(A+TINY_NUM) % log(Ahat+TINY_NUM) + Ahat).eval().elem(non_missing));
-		}
-		else
-		{
-			const mat & Ahat = W.t()*H;
-			mse_err(i_e) = mean(mean(square((A - Ahat))));
-			mkl_err(i_e) += mean(mean(-(A+TINY_NUM) % log(Ahat+TINY_NUM) + Ahat));
-		}
+	  const mat & Ahat = W.t()*H;
+	  mse_err(i_e) = mean(mean(square((A - Ahat))));
+	  mkl_err(i_e) = cost(A,Ahat,TINY_NUM);
 
 		ave_epoch(i_e) = double(total_raw_iter)/(n+m);
 		if (method < 3) // mse based
@@ -219,6 +204,20 @@ Rcpp::List nnmf(const mat & A, const unsigned int k, mat W, mat H, umat Wm, umat
 		);
 }
 
+// Compute the value of the cost function for non-negative matrix
+// factorization, in which matrix A is approximated by the matrix
+// product W*H. Ths is equivalent to the negative Poisson
+// log-likelihood after removing terms that do not depend on W or H.
+double cost (const mat& A, const mat& Ahat, double e) {
+  uint   m = A.n_cols;
+  double f = 0;
+  
+  // Repeat for each column of A.
+  for (uint j = 0; j < m; j++)
+    f += sum(Ahat.col(j)) - sum(A.col(j) % log(Ahat.col(j) + e));
+  
+  return f;
+}
 
 // add_penalty to the target error 'terr'
 void add_penalty(const unsigned int & i_e, vec & terr, const mat & W, const mat & H,
