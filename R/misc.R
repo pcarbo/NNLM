@@ -1,20 +1,3 @@
-#' Compute mean square error(MSE) and mean kL divergence (MKL)
-#' 
-#' @param obs          observed value
-#' @param pred         prediction/estimate
-#' @param na.rm        if to remove NAs
-#' @param show.warning if to show warning if any
-#' @return A vector of c(MSE, MKL)
-#' @export
-mse.mkl <- function(obs, pred, na.rm = TRUE, show.warning = TRUE) {
-	mkl <- ifelse(
-		!show.warning && (any(obs < 0) || any(pred < 0)), NaN, 
-		mean((obs + 1e-16)*log((obs+1e-16) / (pred+1e-16)) - obs + pred, na.rm = na.rm)
-		);
-	mse <- mean((obs - pred)^2, na.rm = na.rm)
-	return(c(MSE = mse, MKL = mkl));
-	}
-
 # Get method code passed to C++ functions
 # 	1 = "scd" + "mse"
 # 	2 = "lee" + "mse"

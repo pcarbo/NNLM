@@ -18,8 +18,7 @@ Imports:
     utils
 LinkingTo: 
     Rcpp, 
-    RcppArmadillo, 
-    RcppProgress
+    RcppArmadillo
 LazyData: yes
 LazyLoad: yes
 NeedsCompilation: yes
