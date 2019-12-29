@@ -1,7 +1,0 @@
-^\.travis\.yml$
-^README\.md$
-^.*\.Rproj$
-^__.*$
-TODO.md
-^.*_cache$
-^.*_files$
