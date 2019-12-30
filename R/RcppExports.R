@@ -5,7 +5,3 @@ nnmf_update_loadings_rcpp <- function(A, W, H, inner_max_iter) {
     .Call('_NNLM_nnmf_update_loadings_rcpp', PACKAGE = 'NNLM', A, W, H, inner_max_iter)
 }
 
-nnmf_update_factors_rcpp <- function(A, W, H, inner_max_iter) {
-    .Call('_NNLM_nnmf_update_factors_rcpp', PACKAGE = 'NNLM', A, W, H, inner_max_iter)
-}
-

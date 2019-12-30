@@ -25,11 +25,3 @@ arma::mat nnmf_update_loadings_rcpp (const arma::mat& A, const arma::mat& W,
   update(Wnew,H,A,inner_max_iter);
   return Wnew;
 }
-
-// [[Rcpp::export]]
-arma::mat nnmf_update_factors_rcpp (const arma::mat& A, const arma::mat& W,
-				    const arma::mat& H, uint inner_max_iter) {
-  arma::mat Hnew = H;
-  update(Hnew,W,A,inner_max_iter);
-  return Hnew;
-}
