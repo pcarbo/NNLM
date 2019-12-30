@@ -19,17 +19,17 @@
 //
 
 // [[Rcpp::export]]
-Rcpp::List nnmf_rcpp (const arma::mat& A, arma::mat& W, arma::mat& H, 
-		      const unsigned int inner_max_iter) {
+arma::mat nnmf_update_loadings_rcpp (const arma::mat& A, const arma::mat& W,
+				     const arma::mat& H, uint inner_max_iter) {
+  arma::mat Wnew = W;
+  update(Wnew,H,A,inner_max_iter);
+  return Wnew;
+}
 
-  inplace_trans(W);
-
-  // update W
-  update(W,H,A.t(),inner_max_iter);
-
-  // update H
-  update(H,W,A,inner_max_iter);
-
-  return Rcpp::List::create(Rcpp::Named("W") = W.t(),
-			    Rcpp::Named("H") = H);
+// [[Rcpp::export]]
+arma::mat nnmf_update_factors_rcpp (const arma::mat& A, const arma::mat& W,
+				    const arma::mat& H, uint inner_max_iter) {
+  arma::mat Hnew = H;
+  update(Hnew,W,A,inner_max_iter);
+  return Hnew;
 }

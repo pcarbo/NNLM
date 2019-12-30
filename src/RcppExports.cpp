@@ -6,23 +6,38 @@
 
 using namespace Rcpp;
 
-// nnmf_rcpp
-Rcpp::List nnmf_rcpp(const arma::mat& A, arma::mat& W, arma::mat& H, const unsigned int inner_max_iter);
-RcppExport SEXP _NNLM_nnmf_rcpp(SEXP ASEXP, SEXP WSEXP, SEXP HSEXP, SEXP inner_max_iterSEXP) {
+// nnmf_update_loadings_rcpp
+arma::mat nnmf_update_loadings_rcpp(const arma::mat& A, const arma::mat& W, const arma::mat& H, uint inner_max_iter);
+RcppExport SEXP _NNLM_nnmf_update_loadings_rcpp(SEXP ASEXP, SEXP WSEXP, SEXP HSEXP, SEXP inner_max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type W(WSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type H(HSEXP);
-    Rcpp::traits::input_parameter< const unsigned int >::type inner_max_iter(inner_max_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(nnmf_rcpp(A, W, H, inner_max_iter));
+    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type H(HSEXP);
+    Rcpp::traits::input_parameter< uint >::type inner_max_iter(inner_max_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(nnmf_update_loadings_rcpp(A, W, H, inner_max_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nnmf_update_factors_rcpp
+arma::mat nnmf_update_factors_rcpp(const arma::mat& A, const arma::mat& W, const arma::mat& H, uint inner_max_iter);
+RcppExport SEXP _NNLM_nnmf_update_factors_rcpp(SEXP ASEXP, SEXP WSEXP, SEXP HSEXP, SEXP inner_max_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type H(HSEXP);
+    Rcpp::traits::input_parameter< uint >::type inner_max_iter(inner_max_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(nnmf_update_factors_rcpp(A, W, H, inner_max_iter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_NNLM_nnmf_rcpp", (DL_FUNC) &_NNLM_nnmf_rcpp, 4},
+    {"_NNLM_nnmf_update_loadings_rcpp", (DL_FUNC) &_NNLM_nnmf_update_loadings_rcpp, 4},
+    {"_NNLM_nnmf_update_factors_rcpp", (DL_FUNC) &_NNLM_nnmf_update_factors_rcpp, 4},
     {NULL, NULL, 0}
 };
 
