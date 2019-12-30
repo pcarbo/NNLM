@@ -1,3 +1,4 @@
+Encoding: UTF-8
 Package: NNLM
 Type: Package
 Title: Fast and Versatile Non-Negative Matrix Factorization
@@ -30,7 +31,7 @@ Suggests:
     missForest,
     ISOpureR
 VignetteBuilder: knitr
-RoxygenNote: 5.0.0
+RoxygenNote: 6.1.1
 License: BSD_2_clause + file LICENSE
 BugReports: https://github.com/linxihui/NNLM/issues
 URL: https://github.com/linxihui/NNLM

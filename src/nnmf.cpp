@@ -1,7 +1,7 @@
 #include "nnlm.h"
   
 // Non-negative Matrix Factorization(NNMF) using alternating scheme
-// Decompose matrix A such that A = W H.
+// Decompose matrix A such that A = W*H.
 //
 // Arguments:
 //
@@ -19,18 +19,16 @@
 //
 
 // [[Rcpp::export]]
-Rcpp::List nnmf (const arma::mat& A, arma::mat& W, arma::mat& H, 
-		 const unsigned int inner_max_iter) {
+Rcpp::List nnmf_rcpp (const arma::mat& A, arma::mat& W, arma::mat& H, 
+		      const unsigned int inner_max_iter) {
 
   inplace_trans(W);
 
   // update W
-  update(W, H, A.t(), Wm, alpha, inner_max_iter,
-	 inner_rel_tol, n_threads, method);
-	  
+  update(W,H,A.t(),inner_max_iter);
+
   // update H
-  update(H, W, A, Hm, beta, inner_max_iter,
-	 inner_rel_tol, n_threads, method);
+  update(H,W,A,inner_max_iter);
 
   return Rcpp::List::create(Rcpp::Named("W") = W.t(),
 			    Rcpp::Named("H") = H);

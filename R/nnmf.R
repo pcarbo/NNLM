@@ -39,15 +39,15 @@ nnmf <- function(
 		trace <- 999999L; # only compute error of the 1st and last iteration
 		}
 
-	run.time <- system.time(
-		out <- .Call('NNLM_nnmf', A, as.integer(k),
-			init.mask$Wi, init.mask$Hi, init.mask$Wm, init.mask$Hm,
-			alpha, beta, as.integer(max.iter), as.double(rel.tol),
-			as.integer(n.threads), as.integer(verbose), as.logical(show.warning),
-			as.integer(inner.max.iter), as.double(inner.rel.tol), as.integer(method.code),
-			as.integer(trace), PACKAGE = 'NNLM'
-			)
-		);
+	## run.time <- system.time(
+	## 	out <- .Call('NNLM_nnmf', A, as.integer(k),
+	## 		init.mask$Wi, init.mask$Hi, init.mask$Wm, init.mask$Hm,
+	## 		alpha, beta, as.integer(max.iter), as.double(rel.tol),
+	## 		as.integer(n.threads), as.integer(verbose), as.logical(show.warning),
+	## 		as.integer(inner.max.iter), as.double(inner.rel.tol), as.integer(method.code),
+	## 		as.integer(trace), PACKAGE = 'NNLM'
+	## 		)
+	## 	);
 	names(out) <- c('W', 'H', 'mse', 'mkl', 'target.loss', 'average.epochs', 'n.iteration');
 	out$mse <- as.vector(out$mse);
 	out$mkl <- as.vector(out$mkl);
